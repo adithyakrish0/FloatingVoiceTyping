@@ -1,3 +1,5 @@
+package com.adithyakrishnan.floatingvoicetyping
+
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -38,7 +40,6 @@ class DownloadWorker(context: Context, params: WorkerParameters) :
 
     companion object {
         fun enqueueDownload(context: Context, model: ModelInfo) {
-            // Fixed: Use Data.Builder instead of workDataOf
             val data = Data.Builder()
                 .putString("model_url", model.url)
                 .putString("filename", model.filename)

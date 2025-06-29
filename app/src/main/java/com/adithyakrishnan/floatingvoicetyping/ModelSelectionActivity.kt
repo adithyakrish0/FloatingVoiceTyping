@@ -1,14 +1,20 @@
-// ModelSelectionActivity.kt
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
+package com.adithyakrishnan.floatingvoicetyping
+
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.adithyakrishnan.floatingvoicetyping.R
+
 class ModelSelectionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_selection)
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
         val adapter = ModelAdapter(ModelRepository.models) { model ->
             if (isModelDownloaded(model.filename)) {

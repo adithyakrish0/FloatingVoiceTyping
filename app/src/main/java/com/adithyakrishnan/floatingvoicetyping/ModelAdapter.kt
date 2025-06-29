@@ -1,9 +1,13 @@
+package com.adithyakrishnan.floatingvoicetyping
+
+import android.graphics.Color
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import android.graphics.Color
-import android.view.LayoutInflater
+import com.adithyakrishnan.floatingvoicetyping.R
+
 class ModelAdapter(
     private val models: List<ModelInfo>,
     private val onModelSelected: (ModelInfo) -> Unit

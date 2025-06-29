@@ -6,7 +6,6 @@ import org.tensorflow.lite.support.audio.TensorAudio
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.FloatBuffer
 
 class WhisperTFLite(context: Context, modelName: String = "whisper-tiny-en-int8.tflite") {
 
@@ -53,8 +52,8 @@ class WhisperTFLite(context: Context, modelName: String = "whisper-tiny-en-int8.
                 audioBuffer[it] / 32768.0f
             }
 
-            // Load into tensor with proper format
-            tensor.load(floatBuffer, audioFormat)
+            // FIXED: Use single-parameter load() method
+            tensor.load(floatBuffer)
 
             // Run inference
             val output = classifier.classify(tensor)

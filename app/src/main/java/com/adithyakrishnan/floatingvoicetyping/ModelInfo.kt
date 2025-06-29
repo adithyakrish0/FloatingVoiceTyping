@@ -1,4 +1,5 @@
-// ModelInfo.kt
+package com.adithyakrishnan.floatingvoicetyping
+
 data class ModelInfo(
     val name: String,
     val sizeMB: Int,

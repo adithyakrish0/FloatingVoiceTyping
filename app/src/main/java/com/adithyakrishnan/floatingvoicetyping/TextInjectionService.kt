@@ -1,16 +1,18 @@
 package com.adithyakrishnan.floatingvoicetyping
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import android.view.accessibility.AccessibilityServiceInfo
+
 class TextInjectionService : AccessibilityService() {
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -26,17 +28,30 @@ class TextInjectionService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
 
-        // Configure accessibility service
-        val config = accessibilityServiceInfo.apply {
+        // Create new config object instead of modifying existing one
+        val config = AccessibilityServiceInfo().apply {
+            // Set event types
             eventTypes = AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED or
                     AccessibilityEvent.TYPE_VIEW_FOCUSED
 
+            // Set feedback type
             feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
+
+            // Set flags
             flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or
                     AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
 
+            // Set timeout
             notificationTimeout = 100
+
+            // Required for modern Android versions
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                // Allows the service to observe the text content of the active window
+                flags = flags or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+            }
         }
+
+        // Apply the configuration
         this.serviceInfo = config
 
         // Register broadcast receiver
@@ -47,14 +62,14 @@ class TextInjectionService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Optional: You can track focus changes here if needed
+        // Optional: Track focus changes if needed
         event?.let {
             Log.v("TextInjection", "Accessibility event: ${event.eventType}")
         }
     }
 
     override fun onInterrupt() {
-        // Clean up when service is interrupted
+        // Handle interruption
     }
 
     override fun onDestroy() {
@@ -90,9 +105,14 @@ class TextInjectionService : AccessibilityService() {
             val args = Bundle().apply {
                 putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
             }
-            node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
-            Log.d("TextInjection", "Text set via ACTION_SET_TEXT")
-            true
+            val success = node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
+            if (success) {
+                Log.d("TextInjection", "Text set via ACTION_SET_TEXT")
+                true
+            } else {
+                Log.e("TextInjection", "ACTION_SET_TEXT failed (returned false)")
+                false
+            }
         } catch (e: Exception) {
             Log.e("TextInjection", "ACTION_SET_TEXT failed", e)
             false
@@ -101,20 +121,27 @@ class TextInjectionService : AccessibilityService() {
 
     private fun tryPasteText(node: AccessibilityNodeInfo, text: String): Boolean {
         return try {
-            // First set text to clipboard (simulated)
+            // Focus the field if not already focused
+            if (!node.isFocused) {
+                node.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
+                // Add small delay to ensure focus is acquired
+                Thread.sleep(50)
+            }
+
+            // Set clipboard content (simulated)
             val args = Bundle().apply {
                 putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
             }
 
-            // Focus the field if not already focused
-            if (!node.isFocused) {
-                node.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
-            }
-
             // Paste from clipboard
-            node.performAction(AccessibilityNodeInfo.ACTION_PASTE)
-            Log.d("TextInjection", "Text pasted via ACTION_PASTE")
-            true
+            val success = node.performAction(AccessibilityNodeInfo.ACTION_PASTE, args)
+            if (success) {
+                Log.d("TextInjection", "Text pasted via ACTION_PASTE")
+                true
+            } else {
+                Log.e("TextInjection", "ACTION_PASTE failed (returned false)")
+                false
+            }
         } catch (e: Exception) {
             Log.e("TextInjection", "ACTION_PASTE failed", e)
             false
