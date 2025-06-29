@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/floating_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/micButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/floating_mic"
+        android:src="@android:drawable/ic_btn_speak_now"
+        android:contentDescription="Voice Input"/>
+</FrameLayout>

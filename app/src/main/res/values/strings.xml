@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Floating Voice Typing</string>
+    <string name="accessibility_service_label">Voice Typing Accessibility Service</string>
+
+    <!-- Add these if you don't have them -->
+    <string name="floating_mic_description">Voice Input</string>
+    <string name="download_model">Download Model</string>
+    <string name="cancel">Cancel</string>
+    <string name="downloading_model">Downloading %s...</string>
+</resources>
